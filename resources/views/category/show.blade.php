@@ -63,6 +63,16 @@
                             </h5>
                             <p class="card-text">${{ number_format($product->price, 2) }}</p>
                             <a href="{{ route('product.show', $product->slug) }}" class="btn btn-outline-primary btn-sm">View Details</a>
+
+
+                            <form action="{{ route('cart.add', $product) }}" method="POST" class="mt-2">
+                                @csrf
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                    <i class="bi bi-cart-plus"></i> Add to Cart
+                                </button>
+                            </form>
+
                         </div>
                     </div>
                 </div>

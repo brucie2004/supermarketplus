@@ -44,7 +44,17 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $product->name }}</h5>
                             <p class="card-text">${{ $product->price }}</p>
-                            <a href="#" class="btn btn-outline-primary">Add to Cart</a>
+                            
+                            
+                            <form action="{{ route('cart.add', $product) }}" method="POST" class="mt-2">
+                                @csrf
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-success btn-sm w-100">
+                                    <i class="bi bi-cart-plus"></i> Add to Cart
+                                </button>
+                            </form>
+
+
                         </div>
                     </div>
                 </div>

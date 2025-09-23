@@ -40,7 +40,7 @@
                 
                 <!-- Add to Cart Form -->
                 @if($product->stock_quantity > 0)
-                    <form action="{{ route('cart.add', $product) }}" method="POST" class="mb-4">
+                   <form action="{{ route('cart.add', $product) }}" method="POST" class="mb-4">
                         @csrf
                         <div class="row align-items-center">
                             <div class="col-auto">
