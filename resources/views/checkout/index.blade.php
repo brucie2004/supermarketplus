@@ -6,6 +6,8 @@
     <title>Checkout | SuperMarketPlus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ asset('css/newcss.css') }}">
+    @vite(['resources/css/newcss.css'])
 </head>
 <body>
     @include('partials.navbar')
@@ -200,7 +202,9 @@
                             @if(isset($item['product']))
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <div>
-                                        <small>{{ $item['product']->name }}</small>
+                                        <a href="{{ route('product.show', $item['product']->slug) }}" class="text-decoration-none text-dark">
+                                            <small><strong>{{ $item['product']->name }}</strong></small>
+                                        </a>
                                         <br>
                                         <small class="text-muted">Qty: {{ $item['quantity'] }}</small>
                                     </div>

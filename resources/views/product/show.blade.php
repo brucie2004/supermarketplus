@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $product->name }} | SuperMarketPlus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/newcss.css') }}">
+    @vite(['resources/css/newcss.css'])
 </head>
 <body>
     @include('partials.navbar') <!-- Create a navbar partial to reuse across pages -->
@@ -22,7 +24,8 @@
         <div class="row">
             <!-- Product Image -->
             <div class="col-md-6">
-                <img src="{{ $product->image ?? 'https://via.placeholder.com/400' }}" class="img-fluid rounded" alt="{{ $product->name }}">
+                <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/400' }}" 
+                class="img-fluid rounded" alt="{{ $product->name }}">
             </div>
             
             <!-- Product Details -->
@@ -92,9 +95,14 @@
                 @foreach($relatedProducts as $relatedProduct)
                     <div class="col-md-3 mb-4">
                         <div class="card h-100">
-                            <img src="{{ $relatedProduct->image ?? 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ $relatedProduct->name }}" height="200" style="object-fit: cover;">
+                            <a href="{{ route('product.show', $relatedProduct->slug) }}">
+                                <img src="{{ $relatedProduct->image ? asset('storage/' . $relatedProduct->image) : 'https://via.placeholder.com/300' }}" 
+                                    class="card-img-top" alt="{{ $relatedProduct->name }}" height="200" style="object-fit: cover;">
+                            </a>
                             <div class="card-body">
-                                <h5 class="card-title">{{ Str::limit($relatedProduct->name, 40) }}</h5>
+                                <a href="{{ route('product.show', $relatedProduct->slug) }}" class="text-decoration-none text-dark">
+                                    <h5 class="card-title">{{ Str::limit($relatedProduct->name, 40) }}</h5>
+                                </a>
                                 <p class="card-text">${{ number_format($relatedProduct->price, 2) }}</p>
                                 <a href="{{ route('product.show', $relatedProduct->slug) }}" class="btn btn-outline-primary btn-sm">View Details</a>
                             </div>

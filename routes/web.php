@@ -11,6 +11,10 @@ use App\Http\Controllers\OrderItemController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\AdminProductController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -33,9 +37,9 @@ Route::prefix('cart')->group(function () {
 
 
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -81,3 +85,48 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [ProfileController::class, 'orders'])->name('profile.orders');
     Route::get('/orders/{order}', [ProfileController::class, 'orderDetails'])->name('profile.order.details');
 });
+
+
+
+
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    
+    
+    Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
+    
+      
+    Route::get('/categories', [AdminController::class, 'categories'])->name('admin.categories');
+    
+    
+    Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
+    
+    
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+
+
+
+    Route::get('/products', [AdminProductController::class, 'index'])->name('admin.products.index');
+    Route::get('/products/create', [AdminProductController::class, 'create'])->name('admin.products.create');
+    Route::post('/products', [AdminProductController::class, 'store'])->name('admin.products.store');
+    Route::get('/products/{product}/edit', [AdminProductController::class, 'edit'])->name('admin.products.edit');
+    Route::put('/products/{product}', [AdminProductController::class, 'update'])->name('admin.products.update');
+    Route::delete('/products/{product}', [AdminProductController::class, 'destroy'])->name('admin.products.destroy');
+
+
+
+
+});
+
+
+
+
+Route::middleware('guest')->group(function () {
+    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+    Route::post('register', [RegisteredUserController::class, 'store']);
+    
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+});
+
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

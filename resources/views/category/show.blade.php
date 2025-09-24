@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $category->name }} | SuperMarketPlus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/newcss.css') }}">
+    @vite(['resources/css/newcss.css'])
 </head>
 <body>
 
@@ -53,26 +55,24 @@
                 <div class="col-md-3 mb-3">
                     <div class="card h-100">
                         <a href="{{ route('product.show', $product->slug) }}">
-                            <img src="{{ $product->image ?? 'https://via.placeholder.com/300' }}" class="card-img-top" alt="{{ $product->name }}" height="200" style="object-fit: cover;">
+                            <img src="{{ $product->image ? asset('storage/' . $product->image) : 'https://via.placeholder.com/300' }}" 
+                                class="card-img-top" alt="{{ $product->name }}" height="200" style="object-fit: cover;">
                         </a>
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <a href="{{ route('product.show', $product->slug) }}" class="text-decoration-none text-dark">
-                                    {{ Str::limit($product->name, 40) }}
-                                </a>
-                            </h5>
+                        <div class="card-body d-flex flex-column">
+                            <a href="{{ route('product.show', $product->slug) }}" class="text-decoration-none text-dark">
+                                <h5 class="card-title">{{ $product->name }}</h5>
+                            </a>
                             <p class="card-text">${{ number_format($product->price, 2) }}</p>
-                            <a href="{{ route('product.show', $product->slug) }}" class="btn btn-outline-primary btn-sm">View Details</a>
-
-
-                            <form action="{{ route('cart.add', $product) }}" method="POST" class="mt-2">
-                                @csrf
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="btn btn-success btn-sm w-100">
-                                    <i class="bi bi-cart-plus"></i> Add to Cart
-                                </button>
-                            </form>
-
+                            <div class="mt-auto">
+                                <a href="{{ route('product.show', $product->slug) }}" class="btn btn-outline-primary btn-sm">View Details</a>
+                                <form action="{{ route('cart.add', $product) }}" method="POST" class="mt-2">
+                                    @csrf
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-success btn-sm w-100">
+                                        <i class="bi bi-cart-plus"></i> Add to Cart
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
