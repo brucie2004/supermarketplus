@@ -11,20 +11,20 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
     public function dashboard()
-    {
-        $stats = [
-            'totalProducts' => Product::count(),
-            'totalCategories' => Category::count(),
-            'totalOrders' => Order::count(),
-            'totalUsers' => User::count(),
-            'pendingOrders' => Order::where('status', 'pending')->count(),
-            'completedOrders' => Order::where('status', 'completed')->count(),
-            'revenue' => Order::where('status', 'completed')->sum('total_amount'),
-        ];
+{
+    $stats = [
+        'totalProducts' => Product::count(),
+        'totalCategories' => Category::count(),
+        'totalOrders' => Order::count(),
+        'totalUsers' => User::count(),
+        'pendingOrders' => Order::where('status', 'pending')->count(),
+        'completedOrders' => Order::where('status', 'completed')->count(),
+        'revenue' => Order::where('status', 'completed')->sum('total_amount'),
+    ];
 
-        $recentOrders = Order::with('user')->latest()->take(5)->get();
-        $lowStockProducts = Product::where('stock_quantity', '<', 10)->get();
+    $recentOrders = Order::with('user')->latest()->take(5)->get();
+    $lowStockProducts = Product::where('stock_quantity', '<', 10)->get();
 
-        return view('admin.dashboard', compact('stats', 'recentOrders', 'lowStockProducts'));
-    }
+    return view('admin.dashboard', compact('stats', 'recentOrders', 'lowStockProducts'));
+}
 }

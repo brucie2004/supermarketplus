@@ -92,6 +92,7 @@
                                     <th>Date</th>
                                     <th>Amount</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -109,6 +110,11 @@
                                                 @else bg-secondary @endif">
                                                 {{ ucfirst($order->status) }}
                                             </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
+                                                View
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach

@@ -56,13 +56,13 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.categories*') ? 'active' : '' }}" 
-                               href="{{ route('admin.categories') }}">
+                            href="{{ route('admin.categories.index') }}">
                                 <i class="bi bi-tags"></i> Categories
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.orders*') ? 'active' : '' }}" 
-                               href="{{ route('admin.orders') }}">
+                            href="{{ route('admin.orders.index') }}">
                                 <i class="bi bi-receipt"></i> Orders
                             </a>
                         </li>

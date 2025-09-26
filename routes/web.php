@@ -15,6 +15,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AdminProductController;
+use App\Http\Controllers\AdminCategoryController;
+use App\Http\Controllers\AdminOrderController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -130,3 +132,17 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+Route::get('/categories', [AdminCategoryController::class, 'index'])->name('admin.categories.index');
+Route::get('/categories/create', [AdminCategoryController::class, 'create'])->name('admin.categories.create');
+Route::post('/categories', [AdminCategoryController::class, 'store'])->name('admin.categories.store');
+Route::get('/categories/{category}/edit', [AdminCategoryController::class, 'edit'])->name('admin.categories.edit');
+Route::put('/categories/{category}', [AdminCategoryController::class, 'update'])->name('admin.categories.update');
+Route::delete('/categories/{category}', [AdminCategoryController::class, 'destroy'])->name('admin.categories.destroy');
+
+
+
+Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.orders.index');
+Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
+Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+Route::delete('/orders/{order}', [AdminOrderController::class, 'destroy'])->name('admin.orders.destroy');
