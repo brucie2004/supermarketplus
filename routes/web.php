@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AdminProductController;
 use App\Http\Controllers\AdminCategoryController;
 use App\Http\Controllers\AdminOrderController;
+use App\Http\Controllers\AdminUserController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -84,8 +85,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/orders', [ProfileController::class, 'orders'])->name('profile.orders');
-    Route::get('/orders/{order}', [ProfileController::class, 'orderDetails'])->name('profile.order.details');
+    Route::get('/myorders', [ProfileController::class, 'orders'])->name('profile.orders');
+    Route::get('/myorders/{order}', [ProfileController::class, 'orderDetails'])->name('profile.order.details');
 });
 
 
@@ -146,3 +147,12 @@ Route::get('/orders', [AdminOrderController::class, 'index'])->name('admin.order
 Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('admin.orders.show');
 Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
 Route::delete('/orders/{order}', [AdminOrderController::class, 'destroy'])->name('admin.orders.destroy');
+
+
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    // ... your existing admin routes ...
+    Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::put('/users/{user}/toggle-admin', [AdminUserController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+});
