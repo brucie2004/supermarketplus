@@ -26,6 +26,10 @@
             @foreach($categories as $category)
                 <div class="col-md-3 mb-3">
                     <div class="card">
+                         <a href="{{ route('category.show', $category->slug) }}">
+                        <img src="{{ $category->image ? asset('storage/' . $category->image) : 'https://via.placeholder.com/300' }}" 
+                                class="card-img-top" alt="{{ $category->name }}" style="height: 200px; object-fit: cover;">
+                          </a>
                         <div class="card-body">
                             <h5 class="card-title">{{ $category->name }}</h5>
                             <a href="{{ route('category.show', $category->slug) }}" class="btn btn-primary">Browse</a>

@@ -18,6 +18,7 @@ use App\Http\Controllers\AdminProductController;
 use App\Http\Controllers\AdminCategoryController;
 use App\Http\Controllers\AdminOrderController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\PaymentController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -156,3 +157,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/users/{user}/toggle-admin', [AdminUserController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 });
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/create-payment-intent', [PaymentController::class, 'createPaymentIntent'])->name('payment.create-intent');
+    Route::get('/payment/success/{order}', [PaymentController::class, 'handlePaymentSuccess'])->name('payment.success');
+    Route::get('/order/confirmation/{order}', [PaymentController::class, 'showConfirmation'])->name('order.confirmation');
+});
+Route::get('/checkout/payment/process/{order}', [CheckoutController::class, 'processPayment'])->name('checkout.payment.process');
+

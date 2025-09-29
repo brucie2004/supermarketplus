@@ -137,18 +137,36 @@
                             <!-- Payment Method -->
                             <div class="mb-4">
                                 <h5 class="border-bottom pb-2">Payment Method</h5>
-                                <div class="form-check mb-2">
+                                
+                                <!-- Stripe Credit Card Payment -->
+                                <div class="form-check mb-3">
                                     <input class="form-check-input" type="radio" name="payment_method" id="credit_card" value="credit_card" checked>
                                     <label class="form-check-label" for="credit_card">
-                                        Credit Card
+                                        Credit Card (Stripe)
                                     </label>
                                 </div>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="paypal">
-                                    <label class="form-check-label" for="paypal">
-                                        PayPal
-                                    </label>
+
+                                <!-- Stripe Card Elements -->
+                                <div id="stripe-card-element" class="mb-3" style="display: none;">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div id="card-element">
+                                                <!-- Stripe.js will inject the Card Element here -->
+                                            </div>
+                                            <div id="card-errors" class="text-danger mt-2" role="alert"></div>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <!-- Payment Buttons -->
+                                <div id="stripe-payment-button" style="display: none;">
+                                    <button type="button" id="submit-payment" class="btn btn-primary btn-lg w-100">
+                                        <span id="payment-button-text">Pay ${{ number_format($grandTotal, 2) }}</span>
+                                        <div id="payment-spinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></div>
+                                    </button>
+                                </div>
+
+                                <!-- Alternative Payment Methods -->
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="payment_method" id="cash_on_delivery" value="cash_on_delivery">
                                     <label class="form-check-label" for="cash_on_delivery">
@@ -247,5 +265,126 @@
             }
         });
     </script>
+    <script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    // Initialize Stripe
+    const stripe = Stripe('{{ config('services.stripe.key') }}');
+    const elements = stripe.elements();
+    
+    // Create card element
+    const cardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                    color: '#aab7c4',
+                },
+            },
+        },
+    });
+    
+    cardElement.mount('#card-element');
+    
+    // Handle real-time validation errors from the card Element
+    cardElement.on('change', function(event) {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+    
+    // Show/hide Stripe elements based on payment method selection
+    document.querySelectorAll('input[name="payment_method"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            const stripeSection = document.getElementById('stripe-card-element');
+            const stripeButton = document.getElementById('stripe-payment-button');
+            
+            if (this.value === 'credit_card') {
+                stripeSection.style.display = 'block';
+                stripeButton.style.display = 'block';
+            } else {
+                stripeSection.style.display = 'none';
+                stripeButton.style.display = 'none';
+            }
+        });
+    });
+    
+    // Trigger change event on page load to show Stripe for default selection
+    document.getElementById('credit_card').dispatchEvent(new Event('change'));
+    
+    // Handle payment submission
+    document.getElementById('submit-payment').addEventListener('click', async function() {
+        const submitButton = this;
+        const buttonText = document.getElementById('payment-button-text');
+        const spinner = document.getElementById('payment-spinner');
+        
+        // Disable button and show spinner
+        submitButton.disabled = true;
+        buttonText.textContent = 'Processing...';
+        spinner.style.display = 'inline-block';
+        
+        try {
+            // Create payment intent
+            const response = await fetch('{{ route("payment.create-intent") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    // We'll get the order_id after creating the order
+                    // For now, we'll handle this in the next step
+                })
+            });
+            
+            const { clientSecret } = await response.json();
+            
+            // Confirm payment with Stripe
+            const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: document.getElementById('shipping_first_name').value + ' ' + document.getElementById('shipping_last_name').value,
+                        email: document.getElementById('shipping_email').value,
+                        phone: document.getElementById('shipping_phone').value,
+                        address: {
+                            line1: document.getElementById('shipping_address').value,
+                            city: document.getElementById('shipping_city').value,
+                            state: document.getElementById('shipping_state').value,
+                            postal_code: document.getElementById('shipping_postal_code').value,
+                            country: document.getElementById('shipping_country').value,
+                        }
+                    }
+                }
+            });
+            
+            if (error) {
+                // Show error to customer
+                const errorElement = document.getElementById('card-errors');
+                errorElement.textContent = error.message;
+                
+                // Re-enable button
+                submitButton.disabled = false;
+                buttonText.textContent = 'Pay ${{ number_format($grandTotal, 2) }}';
+                spinner.style.display = 'none';
+            } else {
+                // Payment succeeded - submit the form
+                document.getElementById('checkout-form').submit();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('card-errors').textContent = 'An error occurred. Please try again.';
+            
+            // Re-enable button
+            submitButton.disabled = false;
+            buttonText.textContent = 'Pay ${{ number_format($grandTotal, 2) }}';
+            spinner.style.display = 'none';
+        }
+    });
+</script>
 </body>
 </html>

@@ -37,5 +37,14 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function getIsPaidAttribute()
+    {
+        return $this->payment && $this->payment->status === 'succeeded';
+    }
     
 }
